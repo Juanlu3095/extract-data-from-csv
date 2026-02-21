@@ -1,9 +1,13 @@
+<h1 id="title">
+  Extract Data From CSV
+</h1>
+
 <!-- FORMULARIO PARA EL CSV -->
 <div id="csv-form">
   <form action="" class="csv-form" [formGroup]="csvForm">
     <label for="file">Seleccione un archivo .csv:</label>
     <input type="file" name="file" id="file" formControlName="file" (change)="readFile($event)">
-    <button type="submit" (click)="onSubmit()">Subir archivo</button>
+    <button type="submit" (click)="sendCSV()">Subir archivo</button>
     @if (file?.hasError('invalidFileFormat')) {
       <p class="file-error">
         El formato del archivo no es csv.
@@ -12,9 +16,29 @@
   </form>
 </div>
 
+<!-- FILTRO DE USERS -->
+<div id="filter">
+  <form action="" class="user-filter" [formGroup]="filterForm">
+    <label for="filter">Introduce parámetro de búsqueda para encontrar usuario:</label>
+    <div class="user-input-button">
+      <input type="text" class="parameter" name="parameter" formControlName="parameter">
+      <button type="submit" (click)="filter()">Buscar</button>
+    </div>
+  </form>
+</div>
+
 <!-- TARJETAS CON LOS DATOS DE LOS USUARIOS -->
 <main>
   <div id="users">
+    <div class="card">
+      <p class="data">Nombre: Pepe</p>
+      <p class="data">Apellido: Pepe</p>
+      <p class="data">Email: pepe&#64;gmail.com</p>
+      <p class="data">Teléfono: 555555555</p>
+      <p class="data">Ciudad: Málaga</p>
+      <p class="data">Fecha inscripción: ayer</p>
+    </div>
+
     <div class="card">
       <p class="data">Nombre: Pepe</p>
       <p class="data">Apellido: Pepe</p>

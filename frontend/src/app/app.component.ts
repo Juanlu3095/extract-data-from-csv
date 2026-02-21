@@ -1,6 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import {FormControl, ReactiveFormsModule, FormGroup, AbstractControl, ValidationErrors, Validators, ValidatorFn} from '@angular/forms';
+import { FormControl, ReactiveFormsModule, FormGroup, AbstractControl, ValidationErrors, Validators, ValidatorFn } from '@angular/forms';
+import { FileService } from './services/file.service';
+import { Subscription } from 'rxjs';
+import { Apiresponse } from './entities/apiresponse';
 
 @Component({
   selector: 'app-root',
@@ -8,12 +11,28 @@ import {FormControl, ReactiveFormsModule, FormGroup, AbstractControl, Validation
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
-export class AppComponent {
+export class AppComponent implements OnInit{
   title = 'Extract data from csv file';
+  suscripcion: Subscription = new Subscription();
+  users: any[] = []
 
   csvForm = new FormGroup({
     file: new FormControl<File | null>(null, Validators.compose([Validators.required, this.ValidateCSV()]))
   })
+
+  filterForm = new FormGroup({
+    parameter: new FormControl<string>("", Validators.required)
+  })
+
+  constructor(private fileservice: FileService) {}
+
+  ngOnInit(): void {
+    this.getUsers()
+
+    this.suscripcion = this.fileservice._refresh$.subscribe(() => {
+      this.getUsers()
+    })
+  }
 
   readFile(fileEvent: any) {
    const file = fileEvent.target.files[0];
@@ -42,10 +61,41 @@ export class AppComponent {
     }
   }
 
-  onSubmit() {
-    if (this.csvForm.valid) {
-      console.log(this.csvForm.value)
+  getUsers () {
+    this.fileservice.getUsers().subscribe({
+      next: (response) => {
+        console.log(response)
+      },
+      error: (error) => {
+        console.error(error)
+      }
+    })
+  }
 
+  sendCSV() {
+    if (this.csvForm.valid && this.csvForm.value.file) { // Lo segundo es que el valor sea truthy (ni null ni undefined)
+      console.log(this.csvForm.value)
+      this.fileservice.postCSV(this.csvForm.value.file).subscribe({
+        next: (response: Apiresponse) => {
+          console.log("Subir csv: ", response)
+        },
+        error: (error) => {
+          console.error(error)
+        }
+      })
+    }
+  }
+
+  filter () {
+    if (this.filterForm.valid) {
+      this.fileservice.getUsers(this.filterForm.value.parameter ?? "").subscribe({
+        next: (response: Apiresponse) => {
+          console.log(response)
+        },
+        error: (error) => {
+          console.error(error)
+        }
+      })
     }
   }
 }

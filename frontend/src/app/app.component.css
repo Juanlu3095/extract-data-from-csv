@@ -1,3 +1,54 @@
+/* TITLE */
+#title {
+    text-align: center;
+}
+
+/* FILE FORM */
+#csv-form {
+    margin: 2rem 0;
+}
+
+form.csv-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem
+}
+
 p.file-error{
     color: red;
+}
+
+/* FILTER */
+form.user-filter {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    justify-content: center;
+    align-items: center;
+    margin: 2rem 0;
+}
+
+.user-input-button {
+    display: flex;
+    gap: 1rem;
+}
+
+input.parameter {
+    border-radius: 5px;
+}
+
+/* CARDS */
+#users {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+}
+
+.card {
+    border: 1px solid;
+    border-color: black;
+    border-radius: 10px;
+    padding: 10px
 }
