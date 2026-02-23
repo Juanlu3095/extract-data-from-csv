@@ -4,6 +4,7 @@ import { FormControl, ReactiveFormsModule, FormGroup, AbstractControl, Validatio
 import { FileService } from './services/file.service';
 import { Subscription } from 'rxjs';
 import { Apiresponse } from './entities/apiresponse';
+import { User } from './entities/user';
 
 @Component({
   selector: 'app-root',
@@ -14,7 +15,7 @@ import { Apiresponse } from './entities/apiresponse';
 export class AppComponent implements OnInit{
   title = 'Extract data from csv file';
   suscripcion: Subscription = new Subscription();
-  users: any[] = []
+  users: User[] = []
 
   csvForm = new FormGroup({
     file: new FormControl<File | null>(null, Validators.compose([Validators.required, this.ValidateCSV()]))
@@ -45,6 +46,7 @@ export class AppComponent implements OnInit{
     return this.csvForm.get('file')
   }
 
+  // Permite validar si un input tiene formato csv
   ValidateCSV(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
       const file: string = control.value
