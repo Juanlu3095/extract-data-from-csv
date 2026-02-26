@@ -6,7 +6,7 @@
 <div id="csv-form">
   <form action="" class="csv-form" [formGroup]="csvForm">
     <label for="file">Seleccione un archivo .csv:</label>
-    <input type="file" name="file" id="file" formControlName="file" (change)="readFile($event)">
+    <input type="file" name="file" id="file" formControlName="file" (change)="readFile($event)" multiple="multiple" accept=".csv">
     <button type="submit" (click)="sendCSV()">Subir archivo</button>
     @if (file?.hasError('invalidFileFormat')) {
       <p class="file-error">

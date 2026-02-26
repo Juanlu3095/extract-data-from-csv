@@ -19,8 +19,8 @@ export class FileService {
     return this.http.get(`${this.endpoint}/users`, { params: httpParams })
   }
 
-  postCSV (file: File): Observable<Apiresponse> {
-    return this.http.post(`${this.endpoint}/files`, file).pipe(
+  postCSV (form: any): Observable<Apiresponse> {
+    return this.http.post(`${this.endpoint}/files`, form).pipe(
       tap(() => {
         this._refresh$.next()
       })

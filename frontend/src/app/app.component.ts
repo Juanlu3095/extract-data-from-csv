@@ -16,9 +16,10 @@ export class AppComponent implements OnInit{
   title = 'Extract data from csv file';
   suscripcion: Subscription = new Subscription();
   users: User[] = []
+  selectedFile!: File
 
   csvForm = new FormGroup({
-    file: new FormControl<File | null>(null, Validators.compose([Validators.required, this.ValidateCSV()]))
+    file: new FormControl<any | null>(null, Validators.compose([Validators.required, this.ValidateCSV()]))
   })
 
   filterForm = new FormGroup({
@@ -36,9 +37,10 @@ export class AppComponent implements OnInit{
   }
 
   readFile(fileEvent: any) {
-   const file = fileEvent.target.files[0];
-   console.log('size', file.size);
-   console.log('type', file.type);
+    const file = fileEvent.target.files[0];
+    console.log('size', file.size);
+    console.log('type', file.type);
+    this.selectedFile = file
   }
 
   // Necesario para comprobar en el .html que file tiene errores
@@ -77,7 +79,9 @@ export class AppComponent implements OnInit{
   sendCSV() {
     if (this.csvForm.valid && this.csvForm.value.file) { // Lo segundo es que el valor sea truthy (ni null ni undefined)
       console.log(this.csvForm.value)
-      this.fileservice.postCSV(this.csvForm.value.file).subscribe({
+      const formData = new FormData()
+      formData.append('file', this.selectedFile)
+      this.fileservice.postCSV(formData).subscribe({
         next: (response: Apiresponse) => {
           console.log("Subir csv: ", response)
         },
