@@ -11,13 +11,26 @@ const port = process.env.PORT ?? 3000
 
 app.use(cors())
 app.use(express.json())
-const storage = multer.memoryStorage()
+const storage = multer.memoryStorage() // Se necesita multer porque se usa FormData en el frontend
 const upload = multer({ storage: storage })
 connection()
 
 app.get('/api/users', async (req: Request, res: Response) => {
-  const parameter = req.query
-  return res.status(200).json({ data: parameter })
+  const { q } = req.query
+  let users
+  if (q) {
+    users = await User.find().or([
+        { nombre: { $regex : new RegExp(String(q), "i") } },
+        { apellido: { $regex : new RegExp(String(q), "i") } },
+        { email: { $regex : new RegExp(String(q), "i") } },
+        { telefono: { $regex : new RegExp(String(q), "i") } },
+        { ciudad: { $regex : new RegExp(String(q), "i") } },
+        { fecha_inscripcion: { $regex : new RegExp(String(q), "i") } },
+      ])
+  } else {
+    users = await User.find({})
+  }
+  return res.status(200).json({ data: users })
 })
 
 app.post('/api/files', upload.single('file'), async (req: Request, res: Response) => {

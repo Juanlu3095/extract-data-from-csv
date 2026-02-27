@@ -1,10 +1,10 @@
-import mongoose, { model } from "mongoose";
+import mongoose from "mongoose";
 
 export const userSchema = new mongoose.Schema({
     nombre: String,
     apellido: String,
     email: String,
-    telefono: Number,
+    telefono: String,
     ciudad: String,
     fecha_inscripcion: String
 })

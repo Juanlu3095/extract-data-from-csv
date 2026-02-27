@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
 
-const { DB_USER, DB_PASS, DB_NAME } = process.env
+const { DB_USER, DB_PASS, DB_NAME, DB_HOST } = process.env
 
-const connectionString = `mongodb+srv://${DB_USER}:${DB_PASS}@extract-data-from-csv.vszugsi.mongodb.net/${DB_NAME}`
+const connectionString = `mongodb+srv://${DB_USER}:${DB_PASS}@${DB_HOST}/${DB_NAME}`
 
 export const connection = async () => {
     await mongoose.connect(connectionString)

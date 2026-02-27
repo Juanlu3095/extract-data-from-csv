@@ -38,8 +38,6 @@ export class AppComponent implements OnInit{
 
   readFile(fileEvent: any) {
     const file = fileEvent.target.files[0];
-    console.log('size', file.size);
-    console.log('type', file.type);
     this.selectedFile = file
   }
 
@@ -67,8 +65,10 @@ export class AppComponent implements OnInit{
 
   getUsers () {
     this.fileservice.getUsers().subscribe({
-      next: (response) => {
-        console.log(response)
+      next: (response: Apiresponse) => {
+        if (response.data) {
+          this.users = response.data
+        }
       },
       error: (error) => {
         console.error(error)
@@ -78,7 +78,6 @@ export class AppComponent implements OnInit{
 
   sendCSV() {
     if (this.csvForm.valid && this.csvForm.value.file) { // Lo segundo es que el valor sea truthy (ni null ni undefined)
-      console.log(this.csvForm.value)
       const formData = new FormData()
       formData.append('file', this.selectedFile)
       this.fileservice.postCSV(formData).subscribe({
@@ -96,12 +95,16 @@ export class AppComponent implements OnInit{
     if (this.filterForm.valid) {
       this.fileservice.getUsers(this.filterForm.value.parameter ?? "").subscribe({
         next: (response: Apiresponse) => {
-          console.log(response)
+          if (response.data) {
+            this.users = response.data
+          }
         },
         error: (error) => {
           console.error(error)
         }
       })
+    } else {
+      this.getUsers()
     }
   }
 }
