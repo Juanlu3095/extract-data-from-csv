@@ -43,17 +43,7 @@ app.post('/api/files', upload.single('file'), async (req: Request, res: Response
   try {
     const string = Buffer.from(file.buffer).toString() // Pasamos de buffer o binario a string
     const json = csvToJson.fieldDelimiter(',').formatValueByType(true).csvStringToJson(string)
-    for (const element of json) { // Se debe usar for y no forEach, porque éste último no espera los await
-      const user = new User({
-        nombre: element.nombre,
-        apellido: element.apellido,
-        email: element.email,
-        telefono: element.telefono,
-        ciudad: element.ciudad,
-        fecha_inscripcion: element.fecha_inscripcion
-      })
-      await user.save()
-    }
+    await User.insertMany(json)
     return res.json({ message: "El archivo se cargó correctamente.", data: json })
     
   } catch (error) {
@@ -62,7 +52,6 @@ app.post('/api/files', upload.single('file'), async (req: Request, res: Response
     }
     return res.status(500).json({ message: "El archivo no se ha podido cargar." })
   }
-  
 })
 
 app.listen(port, () => {
