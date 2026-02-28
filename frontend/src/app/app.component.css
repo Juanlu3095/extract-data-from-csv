@@ -53,3 +53,17 @@ input.parameter {
     border-radius: 10px;
     padding: 10px
 }
+
+/* ERROR MESSAGE */
+#modal-message {
+    padding: 1rem 2rem;
+    text-align: center;
+}
+
+#modal-message h3{
+    color: red;
+}
+
+#modal-message p {
+    white-space: pre-line;
+}

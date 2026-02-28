@@ -4,6 +4,7 @@ import csvToJson from 'convert-csv-to-json'
 import multer from 'multer'
 import { connection } from './database/connection.js'
 import { User } from './model/user.model.js'
+import { MongooseError } from 'mongoose'
 
 const app = express()
 app.disable('x-powered-by')
@@ -42,14 +43,23 @@ app.post('/api/files', upload.single('file'), async (req: Request, res: Response
   try {
     const string = Buffer.from(file.buffer).toString() // Pasamos de buffer o binario a string
     const json = csvToJson.fieldDelimiter(',').formatValueByType(true).csvStringToJson(string)
-    json.forEach(element => {
-      const user = new User(element)
-      user.save()
-    })
+    for (const element of json) { // Se debe usar for y no forEach, porque éste último no espera los await
+      const user = new User({
+        nombre: element.nombre,
+        apellido: element.apellido,
+        email: element.email,
+        telefono: element.telefono,
+        ciudad: element.ciudad,
+        fecha_inscripcion: element.fecha_inscripcion
+      })
+      await user.save()
+    }
     return res.json({ message: "El archivo se cargó correctamente.", data: json })
     
   } catch (error) {
-    console.error("Error: ", error)
+    if (error instanceof MongooseError) {
+      return res.status(422).json({ error: error })
+    }
     return res.status(500).json({ message: "El archivo no se ha podido cargar." })
   }
   

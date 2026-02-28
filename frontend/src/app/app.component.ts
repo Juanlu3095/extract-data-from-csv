@@ -5,6 +5,8 @@ import { FileService } from './services/file.service';
 import { Subscription } from 'rxjs';
 import { Apiresponse } from './entities/apiresponse';
 import { User } from './entities/user';
+import { HttpErrorResponse } from '@angular/common/http';
+import { MongooseValidationError } from './entities/mongooseValidationError';
 
 @Component({
   selector: 'app-root',
@@ -17,6 +19,8 @@ export class AppComponent implements OnInit{
   suscripcion: Subscription = new Subscription();
   users: User[] = []
   selectedFile!: File
+  modalTitle: string = ""
+  modalMessage: string = ""
 
   csvForm = new FormGroup({
     file: new FormControl<any | null>(null, Validators.compose([Validators.required, this.ValidateCSV()]))
@@ -71,7 +75,7 @@ export class AppComponent implements OnInit{
         }
       },
       error: (error) => {
-        console.error(error)
+        this.showModal("⚠️ Error en la operación", "Servicio no disponible.")
       }
     })
   }
@@ -82,10 +86,19 @@ export class AppComponent implements OnInit{
       formData.append('file', this.selectedFile)
       this.fileservice.postCSV(formData).subscribe({
         next: (response: Apiresponse) => {
-          console.log("Subir csv: ", response)
+          this.showModal('✅ Operación correcta', 'Se ha recibido y procesado el archivo.')
         },
-        error: (error) => {
-          console.error(error)
+        error: (error: HttpErrorResponse) => {
+          if (error.status === 422) {
+            const errors: MongooseValidationError[] = error.error.error.errors
+            let messageErrors: string = ""
+            Object.values(errors).forEach(err => {
+              messageErrors += err.message + '\n'
+            })
+            this.showModal("⚠️ Error en la operación: ", messageErrors)
+          } else {
+            this.showModal("⚠️ Error en la operación", "Servicio no disponible.")
+          }
         }
       })
     }
@@ -100,11 +113,18 @@ export class AppComponent implements OnInit{
           }
         },
         error: (error) => {
-          console.error(error)
+          this.showModal("⚠️ Error en la operación", "Servicio no disponible.")
         }
       })
     } else {
       this.getUsers()
     }
+  }
+
+  showModal (title: string, message: string) {
+    this.modalTitle = title
+    this.modalMessage = message
+    const dialog = document.getElementById('modal-message') as HTMLDialogElement
+    dialog?.showModal()
   }
 }
