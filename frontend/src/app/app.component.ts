@@ -7,6 +7,7 @@ import { Apiresponse } from './entities/apiresponse';
 import { User } from './entities/user';
 import { HttpErrorResponse } from '@angular/common/http';
 import { MongooseValidationError } from './entities/mongooseValidationError';
+import { UserService } from './services/user.service';
 
 @Component({
   selector: 'app-root',
@@ -30,7 +31,7 @@ export class AppComponent implements OnInit{
     parameter: new FormControl<string>("", Validators.required)
   })
 
-  constructor(private fileservice: FileService) {}
+  constructor(private fileservice: FileService, private userService: UserService) {}
 
   ngOnInit(): void {
     this.getUsers()
@@ -68,7 +69,7 @@ export class AppComponent implements OnInit{
   }
 
   getUsers () {
-    this.fileservice.getUsers().subscribe({
+    this.userService.getUsers().subscribe({
       next: (response: Apiresponse) => {
         if (response.data) {
           this.users = response.data
@@ -106,7 +107,7 @@ export class AppComponent implements OnInit{
 
   filter () {
     if (this.filterForm.valid) {
-      this.fileservice.getUsers(this.filterForm.value.parameter ?? "").subscribe({
+      this.userService.getUsers(this.filterForm.value.parameter ?? "").subscribe({
         next: (response: Apiresponse) => {
           if (response.data) {
             this.users = response.data
