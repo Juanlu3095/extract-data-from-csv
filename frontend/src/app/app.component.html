@@ -6,7 +6,7 @@
 <div id="csv-form">
   <form action="" class="csv-form" [formGroup]="csvForm">
     <label for="file">Seleccione un archivo .csv:</label>
-    <input type="file" name="file" id="file" formControlName="file" (change)="readFile($event)">
+    <input type="file" name="file" id="file" formControlName="file" (change)="readFile($event)" multiple="multiple" accept=".csv">
     <button type="submit" (click)="sendCSV()">Subir archivo</button>
     @if (file?.hasError('invalidFileFormat')) {
       <p class="file-error">
@@ -30,22 +30,26 @@
 <!-- TARJETAS CON LOS DATOS DE LOS USUARIOS -->
 <main>
   <div id="users">
-    <div class="card">
-      <p class="data">Nombre: Pepe</p>
-      <p class="data">Apellido: Pepe</p>
-      <p class="data">Email: pepe&#64;gmail.com</p>
-      <p class="data">Teléfono: 555555555</p>
-      <p class="data">Ciudad: Málaga</p>
-      <p class="data">Fecha inscripción: ayer</p>
-    </div>
-
-    <div class="card">
-      <p class="data">Nombre: Pepe</p>
-      <p class="data">Apellido: Pepe</p>
-      <p class="data">Email: pepe&#64;gmail.com</p>
-      <p class="data">Teléfono: 555555555</p>
-      <p class="data">Ciudad: Málaga</p>
-      <p class="data">Fecha inscripción: ayer</p>
-    </div>
+    @for (user of users; track user._id) {
+      <div class="card">
+        <p class="data">Nombre: {{ user.nombre }}</p>
+        <p class="data">Apellido: {{ user.apellido }}</p>
+        <p class="data">Email: {{ user.email }}</p>
+        <p class="data">Teléfono: {{ user.telefono }}</p>
+        <p class="data">Ciudad: {{ user.ciudad }}</p>
+        <p class="data">Fecha inscripción: {{ user.fecha_inscripcion }}</p>
+      </div>
+    }
+    @empty {
+      <p>No hay usuarios registrados.</p>
+    }
   </div>
 </main>
+
+<dialog id="modal-message">
+  <h3>{{ modalTitle}}</h3>
+  <p>{{ modalMessage }}</p>
+  <form method="dialog">
+    <button>Aceptar</button>
+  </form>
+</dialog>

@@ -5,6 +5,9 @@ import { FileService } from './services/file.service';
 import { Subscription } from 'rxjs';
 import { Apiresponse } from './entities/apiresponse';
 import { User } from './entities/user';
+import { HttpErrorResponse } from '@angular/common/http';
+import { MongooseValidationError } from './entities/mongooseValidationError';
+import { UserService } from './services/user.service';
 
 @Component({
   selector: 'app-root',
@@ -16,16 +19,19 @@ export class AppComponent implements OnInit{
   title = 'Extract data from csv file';
   suscripcion: Subscription = new Subscription();
   users: User[] = []
+  selectedFile!: File
+  modalTitle: string = ""
+  modalMessage: string = ""
 
   csvForm = new FormGroup({
-    file: new FormControl<File | null>(null, Validators.compose([Validators.required, this.ValidateCSV()]))
+    file: new FormControl<any | null>(null, Validators.compose([Validators.required, this.ValidateCSV()]))
   })
 
   filterForm = new FormGroup({
     parameter: new FormControl<string>("", Validators.required)
   })
 
-  constructor(private fileservice: FileService) {}
+  constructor(private fileservice: FileService, private userService: UserService) {}
 
   ngOnInit(): void {
     this.getUsers()
@@ -36,9 +42,8 @@ export class AppComponent implements OnInit{
   }
 
   readFile(fileEvent: any) {
-   const file = fileEvent.target.files[0];
-   console.log('size', file.size);
-   console.log('type', file.type);
+    const file = fileEvent.target.files[0];
+    this.selectedFile = file
   }
 
   // Necesario para comprobar en el .html que file tiene errores
@@ -64,25 +69,37 @@ export class AppComponent implements OnInit{
   }
 
   getUsers () {
-    this.fileservice.getUsers().subscribe({
-      next: (response) => {
-        console.log(response)
+    this.userService.getUsers().subscribe({
+      next: (response: Apiresponse) => {
+        if (response.data) {
+          this.users = response.data
+        }
       },
       error: (error) => {
-        console.error(error)
+        this.showModal("⚠️ Error en la operación", "Servicio no disponible.")
       }
     })
   }
 
   sendCSV() {
     if (this.csvForm.valid && this.csvForm.value.file) { // Lo segundo es que el valor sea truthy (ni null ni undefined)
-      console.log(this.csvForm.value)
-      this.fileservice.postCSV(this.csvForm.value.file).subscribe({
+      const formData = new FormData()
+      formData.append('file', this.selectedFile)
+      this.fileservice.postCSV(formData).subscribe({
         next: (response: Apiresponse) => {
-          console.log("Subir csv: ", response)
+          this.showModal('✅ Operación correcta', 'Se ha recibido y procesado el archivo.')
         },
-        error: (error) => {
-          console.error(error)
+        error: (error: HttpErrorResponse) => {
+          if (error.status === 422) {
+            const errors: MongooseValidationError[] = error.error.error.errors
+            let messageErrors: string = ""
+            Object.values(errors).forEach(err => {
+              messageErrors += err.message + '\n'
+            })
+            this.showModal("⚠️ Error en la operación: ", messageErrors)
+          } else {
+            this.showModal("⚠️ Error en la operación", "Servicio no disponible.")
+          }
         }
       })
     }
@@ -90,14 +107,25 @@ export class AppComponent implements OnInit{
 
   filter () {
     if (this.filterForm.valid) {
-      this.fileservice.getUsers(this.filterForm.value.parameter ?? "").subscribe({
+      this.userService.getUsers(this.filterForm.value.parameter ?? "").subscribe({
         next: (response: Apiresponse) => {
-          console.log(response)
+          if (response.data) {
+            this.users = response.data
+          }
         },
         error: (error) => {
-          console.error(error)
+          this.showModal("⚠️ Error en la operación", "Servicio no disponible.")
         }
       })
+    } else {
+      this.getUsers()
     }
+  }
+
+  showModal (title: string, message: string) {
+    this.modalTitle = title
+    this.modalMessage = message
+    const dialog = document.getElementById('modal-message') as HTMLDialogElement
+    dialog?.showModal()
   }
 }

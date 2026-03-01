@@ -44,6 +44,7 @@ input.parameter {
     display: flex;
     flex-direction: row;
     gap: 1rem;
+    flex-wrap: wrap;
 }
 
 .card {
@@ -51,4 +52,18 @@ input.parameter {
     border-color: black;
     border-radius: 10px;
     padding: 10px
+}
+
+/* ERROR MESSAGE */
+#modal-message {
+    padding: 1rem 2rem;
+    text-align: center;
+}
+
+#modal-message h3{
+    color: red;
+}
+
+#modal-message p {
+    white-space: pre-line; /* Para que cada error del modal tengo salto de línea */
 }
