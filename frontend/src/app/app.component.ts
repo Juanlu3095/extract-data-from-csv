@@ -24,7 +24,7 @@ export class AppComponent implements OnInit{
   modalMessage: string = ""
 
   csvForm = new FormGroup({
-    file: new FormControl<any | null>(null, Validators.compose([Validators.required, this.ValidateCSV()]))
+    file: new FormControl<File | null>(null, Validators.compose([Validators.required, this.ValidateCSV()]))
   })
 
   filterForm = new FormGroup({
@@ -41,12 +41,15 @@ export class AppComponent implements OnInit{
     })
   }
 
-  readFile(fileEvent: any) {
-    const file = fileEvent.target.files[0];
-    this.selectedFile = file
+  readFile(fileEvent: Event) {
+    const input = fileEvent.target as HTMLInputElement
+    if (input.files && input.files?.length !== 0) {
+      const file = input.files[0];
+      this.selectedFile = file
+    }
   }
 
-  // Necesario para comprobar en el .html que file tiene errores
+  // Necesario para comprobar en el .html que file tiene errores en el @if
   get file() {
     return this.csvForm.get('file')
   }
@@ -91,7 +94,7 @@ export class AppComponent implements OnInit{
         },
         error: (error: HttpErrorResponse) => {
           if (error.status === 422) {
-            const errors: MongooseValidationError[] = error.error.error.errors
+            const errors: MongooseValidationError[] = error.error.message.errors
             let messageErrors: string = ""
             Object.values(errors).forEach(err => {
               messageErrors += err.message + '\n'

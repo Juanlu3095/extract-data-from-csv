@@ -13,7 +13,7 @@ export class FileService {
 
   constructor(private http: HttpClient) { }
 
-  postCSV (form: any): Observable<Apiresponse> {
+  postCSV (form: FormData): Observable<Apiresponse> {
     return this.http.post(`${this.endpoint}/files`, form).pipe(
       tap(() => {
         this._refresh$.next()
