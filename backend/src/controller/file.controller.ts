@@ -18,7 +18,7 @@ export class FileController {
             
         } catch (error) {
             if (error instanceof MongooseError) {
-            return res.status(422).json({ error: error })
+                return res.status(422).json({ message: error })
             }
             return res.status(500).json({ message: "El archivo no se ha podido cargar." })
         }
