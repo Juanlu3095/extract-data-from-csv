@@ -6,11 +6,13 @@
   "main": "server.js",
   "scripts": {
     "dev": "tsx --watch --env-file .env src/server.ts",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node --env-file .env.testing --experimental-vm-modules node_modules/jest/bin/jest.js --forceExit --detectOpenHandles",
+    "test:watch": "npm run test -- --watch",
+    "prod": "node dist/server.js",
     "build": "tsc"
   },
   "keywords": [],
-  "author": "",
+  "author": "Juanlu3095",
   "license": "ISC",
   "packageManager": "pnpm@10.17.0",
   "dependencies": {
@@ -23,8 +25,13 @@
   "devDependencies": {
     "@types/cors": "2.8.19",
     "@types/express": "5.0.6",
+    "@types/jest": "30.0.0",
     "@types/multer": "2.0.0",
     "@types/node": "25.2.3",
+    "@types/supertest": "^7.2.0",
+    "jest": "30.2.0",
+    "supertest": "7.2.2",
+    "ts-jest": "29.4.6",
     "tsx": "4.21.0",
     "typescript": "5.7.3"
   }
