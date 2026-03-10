@@ -1,0 +1,14 @@
+services:
+  csv-api:
+    build: /backend # Url en la carpeta del proyecto de la app
+    ports:
+      - "${PORT}:${PORT}"
+    environment:
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - DB_NAME=${DB_NAME}
+      - DB_HOST=${DB_HOST}
+  csv-front:
+    build: /frontend
+    ports:
+      - 4200:80

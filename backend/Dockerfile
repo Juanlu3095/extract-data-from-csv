@@ -19,7 +19,7 @@ FROM node:22.18.0-alpine
 
 # Copia de la etapa base a producción, la etapa de base deja de existir
 COPY --from=base /app/api/dist /app/api/dist/src
-COPY --from=base /app/api/package.json /app/api/.env /app/api/pnpm-lock.yaml /app/api/
+COPY --from=base /app/api/package.json /app/api/pnpm-lock.yaml /app/api/
 
 WORKDIR /app/api
 
