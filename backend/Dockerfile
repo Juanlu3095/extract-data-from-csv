@@ -2,10 +2,10 @@
 FROM node:22.18.0-alpine as base
 
 # Establece el directorio de trabajo desde el que se ejecuta la app
-WORKDIR /app
+WORKDIR /app/api
 
 # Copia todo el contenido de la máquina local en la carpeta app
-COPY . /app
+COPY . /app/api
 
 # Instala pnpm en el contenedor
 RUN npm install -g pnpm@latest-10
@@ -18,9 +18,10 @@ RUN ["pnpm", "build"]
 FROM node:22.18.0-alpine
 
 # Copia de la etapa base a producción, la etapa de base deja de existir
-COPY --from=base /app/dist /app/package.json /app/.env /app/pnpm-lock.yaml /app/
+COPY --from=base /app/api/dist /app/api/dist/src
+COPY --from=base /app/api/package.json /app/api/.env /app/api/pnpm-lock.yaml /app/api/
 
-WORKDIR /app
+WORKDIR /app/api
 
 RUN npm install -g pnpm@latest-10
 
