@@ -1,3 +1,3 @@
 export const environment = {
-    ApiEndPoint: "http://localhost:3000/api"
+    ApiEndPoint: "https://extract-data-from-csv.onrender.com/api"
 };
